@@ -1,20 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class MessageSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject Message;
+    [SerializeField] private GameObject MessageIn;
+    [SerializeField] private GameObject MessageOut;
     [SerializeField] private RectTransform ContentContainer;
+    [SerializeField] private QueueContainer MessagesQueue;
+    public UnityEvent OnSpawn;
     void Start()
     {
-        Spawn(Message, ContentContainer);
+        MessagesQueue.OnCountChange.AddListener(Spawn);
     }
-    public void Spawn(GameObject message, RectTransform container) 
+    public void Spawn() 
     {
-        var newMessage = Instantiate(message);
-        newMessage.transform.SetParent(container, false);
-        newMessage.transform.localScale = Vector3.one;       
+        var newMessage = Instantiate(MessagesQueue.GetLastMessage());
+        newMessage.transform.SetParent(ContentContainer, false);
+        newMessage.transform.localScale = Vector3.one;
+        OnSpawn.Invoke();
     }
 }
